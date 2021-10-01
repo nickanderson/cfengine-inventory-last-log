@@ -1,0 +1,7 @@
+#+title: Inventory users who have logged in
+
+* Install via cfbs
+
+#+begin_example
+  cfbs add inventory-lastlog
+#+end_example

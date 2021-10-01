@@ -1,0 +1,53 @@
+bundle agent inventory_lastlog
+# @brief Inventory users who have logged in and when
+# @inventory Users who have logged in
+# @inventory Last logged in <Users who have logged in>
+# @configure default:inventory_lastlog._refresh_frequency_min the number of minutes for which to cache inventory before refreshing
+# @requires /usr/bin/lastlog, awk
+{
+  vars:
+
+    !windows::
+      "_users"
+        slist => getindices( lastlog );
+
+      "i_lastlog[$(_users)]"
+        string => "$(_users)",
+        meta => { "inventory", "attribute_name=Users who have logged in" };
+
+      "_refresh_frequency_min"
+        string => "5",
+        unless => isvariable( "_refresh_frequency_min" );
+
+  classes:
+
+      "loaded_lastlog_inventory_from_cache"
+        handle => "load_lastlog_inventory_from_cache",
+        expression => read_module_protocol( "$(sys.statedir)/lastlog.module.cache" );
+
+  commands:
+
+      # Write entries for users who have logged in to a file in the module
+      # protocol format, we get the inventory loaded into the agent by a
+      # lightweight call to cat and we use promise locks to prevent a call to
+      # the shell, lastlog, and awk each agent run.
+
+      # Example: entry
+      # ^context=$(this.bundle)
+      # ^meta=inventory,attribute_name=Last logged in nickanderson
+      # =lastlog[nickanderson]=Sat Mar 30 19:44:14 -0500 2019
+
+      # `/usr/bin/lastlog | awk '!/(^Username\W+Port\W+From\W+Latest)|(\*\*Never logged in\*\*)/{print "^context=$(this.bundle)\n^meta=inventory,attribute_name=Last logged in "$1"\n=lastlog["$1"]="$(NF-5), $(NF-4), $(NF-3), $(NF-2), $(NF-1), $NF }' > $(sys.statedir)/lastlog.module.cache`
+      `/usr/bin/lastlog | awk 'NF > 0 \
+      && \
+      !/^Username[ \t]+Port[ \t]+From[ \t]+[ \t]+Latest/ \
+      && \
+      !/\*\*Never logged in\*\*/ \
+      {
+        print "^context=inventory_lastlog\n\
+^meta=inventory,attribute_name=Last logged in "$1"\n\
+=lastlog["$1"]="$(NF-5), $(NF-4), $(NF-3), $(NF-2), $(NF-1), $NF
+      }' > "$(sys.statedir)/lastlog.module.cache"`
+        contain => in_shell,
+        action => if_elapsed( $(_refresh_frequencey_min) );
+}
