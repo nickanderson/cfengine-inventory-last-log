@@ -1,4 +1,6 @@
 {
+  "name": "Inventory lastlog",
+  "description": "Inventory users who have logged in and when per lastlog",
   "provides": {
     "inventory-lastlog": {
       "description": "Inventory users who have logged in and when per lastlog",
