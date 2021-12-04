@@ -4,4 +4,4 @@ Systems administrators often need to know who logged on to their computers and w
 - Last logged in <USERNAME> :: The time when <USERNAME> last logged in.
 - Users who have logged in :: A list of users who are reported to have logged into the system.
 
-[[https://raw.github.com/nickanderson/cfengine-inventory-last-log/master/host-info-page-inventory.png]]
+[[https://raw.github.com/nickanderson/cfengine-inventory-lastlog/master/host-info-page-inventory.png]]
