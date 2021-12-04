@@ -1,7 +1,7 @@
-#+title: Inventory users who have logged in
+Systems administrators often need to know who logged on to their computers and when for security and compliance reasons. This module inventories users who have logged in as well as the time of their last logon as reported by lastlog. 
 
-* Install via cfbs
+* Inventory
+- Last logged in <USERNAME> :: The time when <USERNAME> last logged in.
+- Users who have logged in :: A list of users who are reported to have logged into the system.
 
-#+begin_example
-  cfbs add inventory-lastlog
-#+end_example
+[[https://raw.github.com/nickanderson/cfengine-inventory-last-log/master/host-info-page-inventory.png]]
