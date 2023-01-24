@@ -7,7 +7,8 @@ bundle agent inventory_lastlog
 {
   vars:
 
-    !windows::
+    "$(this.namespace)_$(this.bundle)_supported_platform"::
+
       "_users"
         slist => getindices( lastlog );
 
@@ -20,12 +21,18 @@ bundle agent inventory_lastlog
         unless => isvariable( "_refresh_frequency_min" );
 
   classes:
+      "$(this.namespace)_$(this.bundle)_supported_platform"
+        expression => "!windows";
+
+    "$(this.namespace)_$(this.bundle)_supported_platform"::
 
       "loaded_lastlog_inventory_from_cache"
         handle => "load_lastlog_inventory_from_cache",
         expression => read_module_protocol( "$(sys.statedir)/lastlog.module.cache" );
 
   commands:
+
+    "$(this.namespace)_$(this.bundle)_supported_platform"::
 
       # Write entries for users who have logged in to a file in the module
       # protocol format, we get the inventory loaded into the agent by a
